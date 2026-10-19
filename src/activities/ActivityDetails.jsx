@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { deleteActivity, getActivity } from "../api/activities";
+import { useNavigate, useParams } from "react-router";
+import { getActivity, deleteActivity } from "../api/activities";
 import { useAuth } from "../auth/AuthContext";
 
 export default function ActivityDetails() {
-  const { token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
-  const [activity, setActivity] = useState(null);
+  const { token } = useAuth();
+  const [activity, setActivity] = useState();
   const [error, setError] = useState(null);
+  const syncActivity = async (id) => {
+    const data = await getActivity(id);
+    setActivity(data);
+  };
 
   useEffect(() => {
-    const syncActivity = async () => {
-      const data = await getActivity(id);
-      setActivity(data);
-    };
-    syncActivity();
+    syncActivity(id);
   }, [id]);
 
   const tryDelete = async () => {
@@ -33,7 +33,9 @@ export default function ActivityDetails() {
 
   return (
     <article>
-      <h1>{activity.name}</h1>
+      <h1>
+        {activity.name} x {activity.id}
+      </h1>
       <p>by {activity.creatorName}</p>
       <p>{activity.description}</p>
       {token && <button onClick={tryDelete}>Delete</button>}
