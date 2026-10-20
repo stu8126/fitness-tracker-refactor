@@ -7,7 +7,7 @@ export default function ActivityDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [activity, setActivity] = useState();
+  const [activity, setActivity] = useState(null);
   const [error, setError] = useState(null);
   const syncActivity = async (id) => {
     const data = await getActivity(id);
@@ -33,9 +33,7 @@ export default function ActivityDetails() {
 
   return (
     <article>
-      <h1>
-        {activity.name} x {activity.id}
-      </h1>
+      <h1>{activity.name}</h1>
       <p>by {activity.creatorName}</p>
       <p>{activity.description}</p>
       {token && <button onClick={tryDelete}>Delete</button>}

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { deleteRoutine, getRoutine } from "../api/routines";
 import { useAuth } from "../auth/AuthContext";
+
 import SetForm from "./sets/SetForm";
+import SetList from "./sets/SetList";
 
 export default function RoutineDetails() {
   const { token } = useAuth();
@@ -17,7 +19,7 @@ export default function RoutineDetails() {
   };
 
   useEffect(() => {
-    syncRoutine(id);
+    syncRoutine();
   }, [id]);
 
   const tryDelete = async () => {
@@ -38,16 +40,7 @@ export default function RoutineDetails() {
       <p>{routine.goal}</p>
       {token && <button onClick={tryDelete}>Delete</button>}
       {error && <p role="alert">{error}</p>}
-      <section>
-        <h2>Sets</h2>
-        <ul>
-          {routine.sets.map((set) => (
-            <li key={set.id}>
-              {set.name} x {set.count}
-            </li>
-          ))}
-        </ul>
-      </section>
+      <SetList sets={routine.sets} syncRoutine={syncRoutine} />
       {token && <SetForm routineID={id} syncRoutine={syncRoutine} />}
     </>
   );

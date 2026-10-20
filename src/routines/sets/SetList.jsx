@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "../auth/AuthContext";
-import { deleteSet } from "../api/sets";
+import { useAuth } from "../../auth/AuthContext";
+import { deleteSet } from "../../api/sets";
 
 export default function SetList({ sets, syncRoutine }) {
   return (
@@ -13,7 +13,7 @@ export default function SetList({ sets, syncRoutine }) {
           ))}
         </ul>
       ) : (
-        <p>This routine doesn&apos;t have any sets. Add one?</p>
+        <p>This routine does not have any sets. Add one?</p>
       )}
     </>
   );

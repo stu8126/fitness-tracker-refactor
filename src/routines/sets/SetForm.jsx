@@ -1,43 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { getActivities } from "../../api/activities";
-import { addSet } from "../../api/sets";
+import { createSet } from "../../api/sets";
 import { useAuth } from "../../auth/AuthContext";
 
 export default function SetForm({ routineId, syncRoutine }) {
+  const { token } = useAuth();
+  const [error, setError] = useState(null);
+
   const [activities, setActivities] = useState([]);
-  const syncActivities = async () => {
-    const data = await getActivities();
-    setActivities(data);
-  };
   useEffect(() => {
+    const syncActivities = async () => {
+      const data = await getActivities();
+      setActivities(data);
+    };
     syncActivities();
   }, []);
 
-  const { token } = useAuth();
-  const [error, setError] = useState();
-
-  const tryAddSet = async (formData) => {
+  const tryCreateSet = async (formData) => {
     setError(null);
-
-    const activityId = formData.get("activityId");
-
-    const count = +formData.get("count");
-
+    const activityId = formData.get("activity");
+    const count = formData.get("count");
     try {
-      await addSet(token, activityId, routineId, count);
-      syncRoutine(routineId);
+      await createSet(token, { activityId, routineId, count });
+      syncRoutine();
     } catch (e) {
-      setError(e);
+      setError(e.message);
     }
   };
 
   return (
-    <section>
+    <>
       <h2>Add a set</h2>
-      <form action={tryAddSet}>
+      <form action={tryCreateSet}>
         <label>
           Activity
-          <select name="activityId">
+          <select name="activity">
             {activities.map((activity) => (
               <option key={activity.id} value={activity.id}>
                 {activity.name}
@@ -49,9 +46,9 @@ export default function SetForm({ routineId, syncRoutine }) {
           Count
           <input type="number" name="count" />
         </label>
-        <button type="submit">Add set</button>
+        <button>Add set</button>
       </form>
       {error && <p role="alert">{error}</p>}
-    </section>
+    </>
   );
 }
